@@ -12,19 +12,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import edu.nd.pmcburne.hwapp.one.ui.theme.HWStarterRepoTheme
+import androidx.room.Room
+import edu.nd.pmcburne.hwapp.one.database.AppDatabase
+import androidx.lifecycle.ViewModelProvider
+import edu.nd.pmcburne.hwapp.one.data.ScoresViewModel
+import edu.nd.pmcburne.hwapp.one.data.ScoresViewModelFactory
+import edu.nd.pmcburne.hwapp.one.ui.ScoresScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "scores_db"
+        ).build()
+        val viewModel = ViewModelProvider(
+            this,
+            ScoresViewModelFactory(db)
+        )[ScoresViewModel::class.java]
         setContent {
             HWStarterRepoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                ScoresScreen(viewModel)
             }
         }
     }
